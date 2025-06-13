@@ -1,0 +1,23 @@
+{
+  "name": "elib",
+  "version": "1.0.0",
+  "description": "This is a ebook API project.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "REST",
+    "API",
+    "Express",
+    "NodeJS"
+  ],
+  "author": "Sandeep Wadhawan <sandeepwadhawan2001@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^24.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
