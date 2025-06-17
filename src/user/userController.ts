@@ -4,6 +4,7 @@ import userModel from "./userModel";
 import bcrypt from 'bcrypt';
 import { sign } from "jsonwebtoken";
 import { config } from "../config/config";
+import { IUser } from "./userTypes";
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
     /** As soon as request comes there are some steps to follow:
@@ -24,11 +25,16 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     // After registering, we need to check whether email already exists in database or not
 
     // Database Call
-    const user = await userModel.findOne({ email });
+    try {
+        const user = await userModel.findOne({ email });
 
-    if (user) {
-        const error = createHttpError(400, "User Email already exists.");
-        return next(error);
+        if (user) {
+            const error = createHttpError(400, "User Email already exists.");
+            return next(error);
+        }
+
+    } catch (error) {
+        return next(createHttpError(500, "Error while getting user from Database"));
     }
 
     // Store user info in DB if not exists
@@ -38,19 +44,38 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     // Password -> Hash
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Storing it to DB
-    const newUser = await userModel.create({
-        name,
-        email,
-        password: hashedPassword,
-    });
+    let newUser: IUser;
+    try {
+        // Storing it to DB
+        newUser = await userModel.create({
+            name,
+            email,
+            password: hashedPassword,
+        });
+
+    } catch (error) {
+        return next(createHttpError(500, "Error while creating user in Database"));
+    }
 
 
-    // Token Generation (JWT token)
-    const token = sign({ sub: newUser._id }, config.jwtSecret as string, { expiresIn: '7d' });
+    try {
+        // Token Generation (JWT token)
+        const token = sign(
+            { 
+                sub: newUser._id 
+            }, 
+            config.jwtSecret as string, 
+            { 
+                expiresIn: '7d', 
+                algorithm: "HS256" 
+            }
+        );
 
-    // Response
-    res.json({ accessToken: token, message: "User registered successfully" });
+        // Response
+        res.json({ accessToken: token, message: "User registered successfully" });
+    } catch (error) {
+        return next(createHttpError(500, "Error while signing the JWT token."));
+    }
 };
 
 export { createUser };
