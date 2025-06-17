@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
 import userModel from "./userModel";
 import bcrypt from 'bcrypt';
+import { sign } from "jsonwebtoken";
+import { config } from "../config/config";
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
     /** As soon as request comes there are some steps to follow:
@@ -36,7 +38,19 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     // Password -> Hash
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    res.json({ message: "User created" });
+    // Storing it to DB
+    const newUser = await userModel.create({
+        name,
+        email,
+        password: hashedPassword,
+    });
+
+
+    // Token Generation (JWT token)
+    const token = sign({ sub: newUser._id }, config.jwtSecret as string, { expiresIn: '7d' });
+
+    // Response
+    res.json({ accessToken: token, message: "User registered successfully" });
 };
 
 export { createUser };
