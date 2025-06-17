@@ -79,4 +79,55 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-export { createUser };
+const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+    const { email, password } = req.body;
+
+    // 1. Validation
+    if (!email || !password) {
+        // Create error here
+        const error = createHttpError(400, "All fields are required");
+        return next(error);
+    }
+
+    // Check whether user exists in Database or not
+    let user;
+    try {
+        user = await userModel.findOne({ email });
+
+        if (!user) {
+            const error = createHttpError(404, "User not found.");
+            return next(error);
+        }
+    } catch (error) {
+        return next(createHttpError(500, "Error while getting user from database"));
+    }
+
+    // We have to match login's email and password with database email and password
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+        return next(createHttpError(400, "Incorrect email or password!"));
+    }
+
+    // If user matches then we have to generate new access token for login
+    try {
+        // Token Generation (JWT token)
+        const token = sign(
+            {
+                sub: user._id
+            },
+            config.jwtSecret as string,
+            {
+                expiresIn: '7d',
+                algorithm: "HS256"
+            }
+        );
+
+        // Response
+        res.status(201).json({ accessToken: token, message: "User logged in successfully!" });
+    } catch (error) {
+        return next(createHttpError(500, "Error while logging the JWT token."));
+    }
+};
+
+export { createUser, loginUser };
