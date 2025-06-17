@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import { sign } from "jsonwebtoken";
 import { config } from "../config/config";
 import { IUser } from "./userTypes";
+import { Require_id } from "mongoose";
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
     /** As soon as request comes there are some steps to follow:
@@ -72,7 +73,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
         );
 
         // Response
-        res.json({ accessToken: token, message: "User registered successfully" });
+        res.status(201).json({ accessToken: token, message: "User registered successfully" });
     } catch (error) {
         return next(createHttpError(500, "Error while signing the JWT token."));
     }
