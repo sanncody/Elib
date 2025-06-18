@@ -4,8 +4,7 @@ import userModel from "./userModel";
 import bcrypt from 'bcrypt';
 import { sign } from "jsonwebtoken";
 import { config } from "../config/config";
-import { IUser } from "./userTypes";
-import { Require_id } from "mongoose";
+import { User } from "./userTypes";
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
     /** As soon as request comes there are some steps to follow:
@@ -45,7 +44,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     // Password -> Hash
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    let newUser: IUser;
+    let newUser: User;
     try {
         // Storing it to DB
         newUser = await userModel.create({
