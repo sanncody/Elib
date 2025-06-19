@@ -17,15 +17,19 @@ const upload = multer({
     },
 });
 
-bookRouter.post('/create', authenticate, upload.fields([
-    {
-        name: "coverImage",
-        maxCount: 1
-    },
-    {
-        name: "file",
-        maxCount: 1
-    }
-]), createBook);
+bookRouter.post('/create',
+    authenticate,
+    upload.fields([
+        {
+            name: "coverImage",
+            maxCount: 1
+        },
+        {
+            name: "file",
+            maxCount: 1
+        }
+    ]),
+    createBook
+);
 
 export default bookRouter;
