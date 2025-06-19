@@ -123,7 +123,7 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
         );
 
         // Response
-        res.status(201).json({ accessToken: token, message: "User logged in successfully!" });
+        res.json({ accessToken: token, message: "User logged in successfully!" });
     } catch (error) {
         return next(createHttpError(500, "Error while logging the JWT token."));
     }
