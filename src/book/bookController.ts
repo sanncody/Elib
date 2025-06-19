@@ -59,4 +59,23 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-export { createBook };
+const updateBook = async(req: Request, res: Response, next: NextFunction) => {
+    const { title, genre } = req.body;
+
+    const bookId = req.params.bookId;
+    
+    const book = await bookModel.findOne({ _id: bookId });
+    
+    if (!book) {
+        return next(createHttpError(404, "Book not found"));
+    }
+    
+    // Check access whether author is updating his book only or not
+    const _req = req as AuthRequest;
+    
+    if (book?.author.toString() !== _req.userId) {
+        return next(createHttpError(403, "You cannot update book of others"));
+    }
+};
+
+export { createBook, updateBook };
