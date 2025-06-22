@@ -194,7 +194,7 @@ const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
     const bookFilePublicId = `${book.file.split('/')[7]}/${book.file.split('/')[8]}`;
 
     try {
-        
+
         try {
             await cloudinary.uploader.destroy(coverImagePublicId);
 
@@ -205,7 +205,7 @@ const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
 
         await bookModel.deleteOne({ _id: bookId });
 
-        res.sendStatus(204).json({ message: "Book deleted Successfully!" });
+        res.sendStatus(204);
     } catch (error) {
         return next(createHttpError(500, "Failed to delete a book"));
     }
