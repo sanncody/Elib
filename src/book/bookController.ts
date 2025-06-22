@@ -141,9 +141,31 @@ const updateBook = async(req: Request, res: Response, next: NextFunction) => {
 
         res.status(200).json(updatedBook);
     } catch (error) {
-        console.error(error);
         return next(createHttpError(500, "Failed to update the book"));
     }
 };
 
-export { createBook, updateBook };
+const listBooks = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // Todo: Add pagination
+        const book = await bookModel.find();
+
+        res.status(200).json(book);
+    } catch (error) {
+        return next(createHttpError(500, "Failed to fetch the list of books"));
+    }
+};
+
+// const fetchSingleBook = async (req: Request, res: Response, next: NextFunction) => {
+//     const { bookId } = req.body;
+
+//     try {
+//         const getBook = await bookModel.findOne({ _id: bookId });
+
+//         res.status(200).json(getBook);
+//     } catch (error) {
+//         return next(createHttpError(500, "Failed to fetch the particular book by provided id"));
+//     }
+// };
+
+export { createBook, updateBook, listBooks };
