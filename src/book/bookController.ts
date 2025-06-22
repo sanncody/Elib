@@ -156,16 +156,20 @@ const listBooks = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-// const fetchSingleBook = async (req: Request, res: Response, next: NextFunction) => {
-//     const { bookId } = req.body;
+const getSingleBook = async (req: Request, res: Response, next: NextFunction) => {
+    const bookId = req.params.bookId;
 
-//     try {
-//         const getBook = await bookModel.findOne({ _id: bookId });
+    try {
+        const book = await bookModel.findOne({ _id: bookId });
+        
+        if (!book) {
+            return next(createHttpError(404, "Book not found by provided id"));
+        }
 
-//         res.status(200).json(getBook);
-//     } catch (error) {
-//         return next(createHttpError(500, "Failed to fetch the particular book by provided id"));
-//     }
-// };
+        res.status(200).json(book);
+    } catch (error) {
+        return next(createHttpError(500, "Failed to fetch the single book by provided id"));
+    }
+};
 
-export { createBook, updateBook, listBooks };
+export { createBook, updateBook, listBooks, getSingleBook };
