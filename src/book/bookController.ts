@@ -146,6 +146,11 @@ const updateBook = async(req: Request, res: Response, next: NextFunction) => {
 };
 
 const listBooks = async (req: Request, res: Response, next: NextFunction) => {
+    // 5 sec sleep simulation
+    const sleep = await new Promise((resolve) => {
+        setTimeout(resolve, 5000);
+    });
+    
     try {
         // Todo: Add pagination
         const book = await bookModel.find().populate("author", "name email");
