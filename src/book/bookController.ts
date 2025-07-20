@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import { AuthRequest } from "../middlewares/authenticate";
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
-    const { title, genre } = req.body;
+    const { title, genre, description } = req.body;
 
     try {
         const files = req.files as { [fieldname: string]: Express.Multer.File[] };
@@ -38,6 +38,7 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
 
         const newBook = await bookModel.create({
             title,
+            description,
             genre,
             author: _req.userId,
             coverImage: uploadResult.secure_url,
@@ -60,7 +61,7 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const updateBook = async(req: Request, res: Response, next: NextFunction) => {
-    const { title, genre } = req.body;
+    const { title, genre, description } = req.body;
 
     try {
         const bookId = req.params.bookId;
@@ -130,6 +131,7 @@ const updateBook = async(req: Request, res: Response, next: NextFunction) => {
             },
             {
                 title,
+                description,
                 genre,
                 coverImage: completeCoverImage ? completeCoverImage : book.coverImage,
                 file: completeFileName ? completeFileName : book.file
